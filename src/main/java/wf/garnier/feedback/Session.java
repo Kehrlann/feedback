@@ -36,7 +36,7 @@ public class Session {
 	}
 
 	public Key getKey() {
-		return key;
+		return this.key;
 	}
 
 	public void setKey(Key key) {
@@ -44,7 +44,7 @@ public class Session {
 	}
 
 	public String getSessionId() {
-		return sessionId;
+		return this.sessionId;
 	}
 
 	public void setSessionId(String sessionId) {
@@ -52,7 +52,7 @@ public class Session {
 	}
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	public void setName(String name) {
@@ -60,7 +60,7 @@ public class Session {
 	}
 
 	public Boolean getActive() {
-		return active;
+		return this.active;
 	}
 
 	public void setActive(Boolean active) {
@@ -68,7 +68,7 @@ public class Session {
 	}
 
 	public LocalDateTime getCreationTime() {
-		return creationTime;
+		return this.creationTime;
 	}
 
 	public void setCreationTime(LocalDateTime creationTime) {
@@ -77,8 +77,8 @@ public class Session {
 
 	@Override
 	public String toString() {
-		return "Session{" + "key=" + key + ", sessionId='" + sessionId + '\'' + ", name='" + name + '\'' + ", active="
-				+ active + ", creationTime=" + creationTime + '}';
+		return "Session{" + "key=" + this.key + ", sessionId='" + this.sessionId + '\'' + ", name='" + this.name + '\''
+				+ ", active=" + this.active + ", creationTime=" + this.creationTime + '}';
 	}
 
 }

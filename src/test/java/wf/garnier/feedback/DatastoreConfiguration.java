@@ -12,7 +12,10 @@ import org.testcontainers.utility.DockerImageName;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @TestConfiguration(proxyBeanMethods = false)
-class DatastoreConfiguration {
+final class DatastoreConfiguration {
+
+	private DatastoreConfiguration() {
+	}
 
 	@Container
 	public static DatastoreEmulatorContainer DATASTORE = new DatastoreEmulatorContainer(

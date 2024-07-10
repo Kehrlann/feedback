@@ -14,8 +14,8 @@ class SessionController {
 	}
 
 	@GetMapping("/")
-	public String index(Model model) {
-		var sessions = sessionRepository.findSessionByActiveEqualsOrderByNameAsc(true);
+	String index(Model model) {
+		var sessions = this.sessionRepository.findSessionByActiveEqualsOrderByNameAsc(true);
 		model.addAttribute("sessions", sessions);
 		return "index";
 	}
