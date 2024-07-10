@@ -4,6 +4,5 @@ spring:
   cloud:
     gcp:
       datastore:
-        database-id: dgarnier-testing
-        credentials:
-          location: "classpath:credentials.json"
+        host: ""
+        project-id: test

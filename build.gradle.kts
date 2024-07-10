@@ -27,6 +27,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+    implementation("com.google.cloud:spring-cloud-gcp-starter-data-datastore:5.4.3")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
@@ -34,7 +35,9 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("net.sourceforge.htmlunit:htmlunit")
     testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("org.testcontainers:gcloud:1.19.8")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 

@@ -1,1 +1,9 @@
-spring.application.name=feedback
+spring:
+  application:
+    name: feedback
+  cloud:
+    gcp:
+      datastore:
+        database-id: dgarnier-testing
+        credentials:
+          location: "classpath:credentials.json"

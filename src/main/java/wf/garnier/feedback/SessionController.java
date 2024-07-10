@@ -1,15 +1,23 @@
 package wf.garnier.feedback;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @Controller
 class SessionController {
 
-    @GetMapping("/")
-    public String index() {
-        return "index";
-    }
+	private final SessionRepository sessionRepository;
+
+	SessionController(SessionRepository sessionRepository) {
+		this.sessionRepository = sessionRepository;
+	}
+
+	@GetMapping("/")
+	public String index(Model model) {
+		var sessions = sessionRepository.findSessionByActiveEqualsOrderByNameAsc(true);
+		model.addAttribute("sessions", sessions);
+		return "index";
+	}
 
 }
