@@ -33,11 +33,8 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.boot:spring-boot-testcontainers")
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("net.sourceforge.htmlunit:htmlunit")
-    testImplementation("org.testcontainers:junit-jupiter")
-    testImplementation("org.testcontainers:gcloud:1.19.8")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 

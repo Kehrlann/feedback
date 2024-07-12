@@ -4,5 +4,5 @@ spring:
   cloud:
     gcp:
       datastore:
-        host: ""
-        project-id: test
+        emulator:
+          enabled: true

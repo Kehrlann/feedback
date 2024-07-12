@@ -1,29 +1,28 @@
 package wf.garnier.feedback;
 
+import java.io.IOException;
+
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.google.api.gax.core.CredentialsProvider;
 import com.google.api.gax.core.NoCredentialsProvider;
+import com.google.cloud.datastore.testing.LocalDatastoreHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.testcontainers.context.ImportTestcontainers;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Import(DatastoreConfiguration.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-@ImportTestcontainers(DatastoreConfiguration.class)
 class FeedbackApplicationTests {
 
 	@Autowired
@@ -35,9 +34,12 @@ class FeedbackApplicationTests {
 	@Autowired
 	SessionRepository sessionRepository;
 
+	@Autowired
+	LocalDatastoreHelper datastoreHelper;
+
 	@BeforeEach
-	void setUp() {
-		DatastoreConfiguration.reset();
+	void setUp() throws IOException {
+		datastoreHelper.reset();
 		sessionRepository.save(new Session("Test session", true));
 		sessionRepository.save(new Session("Other test session", true));
 	}
