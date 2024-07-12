@@ -6,6 +6,7 @@ import java.util.UUID;
 import com.google.cloud.datastore.Key;
 import com.google.cloud.spring.data.datastore.core.mapping.Entity;
 import com.google.cloud.spring.data.datastore.core.mapping.Field;
+import com.google.cloud.spring.data.datastore.core.mapping.Unindexed;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 
@@ -18,12 +19,14 @@ public class Session {
 	@Field(name = "session_id")
 	private String sessionId;
 
+	@Unindexed
 	private String name;
 
 	private Boolean active;
 
 	@CreatedDate
 	@Field(name = "creation_time")
+	@Unindexed
 	private LocalDateTime creationTime;
 
 	public Session() {
