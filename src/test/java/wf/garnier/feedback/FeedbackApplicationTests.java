@@ -42,6 +42,7 @@ class FeedbackApplicationTests {
 		datastoreHelper.reset();
 		sessionRepository.save(new Session("Test session", true));
 		sessionRepository.save(new Session("Other test session", true));
+		sessionRepository.save(new Session("Inactive session", false));
 	}
 
 	@Test
@@ -53,8 +54,7 @@ class FeedbackApplicationTests {
 	void listsSessions() throws Exception {
 		HtmlPage htmlPage = webClient.getPage("/");
 
-		var sesh = htmlPage.querySelectorAll("li");
-		var sessions = sesh.stream().map(DomNode::getTextContent).toList();
+		var sessions = htmlPage.querySelectorAll("li").stream().map(DomNode::getTextContent).toList();
 
 		assertThat(sessions).containsExactly("Other test session", "Test session");
 	}
