@@ -6,3 +6,7 @@ spring:
       datastore:
         emulator:
           enabled: true
+feedback:
+  admin:
+    - alice@example.com
+    - bob@example.com

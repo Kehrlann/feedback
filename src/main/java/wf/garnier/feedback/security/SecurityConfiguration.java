@@ -1,4 +1,4 @@
-package wf.garnier.feedback;
+package wf.garnier.feedback.security;
 
 import jakarta.servlet.DispatcherType;
 import org.springframework.context.annotation.Bean;
@@ -10,12 +10,14 @@ import org.springframework.security.web.SecurityFilterChain;
 class SecurityConfiguration {
 
 	@Bean
-	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	SecurityFilterChain securityFilterChain(HttpSecurity http, AdminAllowListAuthorizationManager authorizationManager)
+			throws Exception {
 		return http.authorizeHttpRequests((auth) -> {
 			auth.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll();
 			auth.requestMatchers("/").permitAll();
 			auth.requestMatchers("/css/*").permitAll();
 			auth.requestMatchers("/favicon.ico").permitAll();
+			auth.requestMatchers("/admin/**").access(authorizationManager);
 			auth.anyRequest().authenticated();
 		}).build();
 	}

@@ -26,6 +26,7 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("com.google.cloud:spring-cloud-gcp-starter-data-datastore:5.4.3")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
