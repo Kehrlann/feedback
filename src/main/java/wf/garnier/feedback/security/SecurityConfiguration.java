@@ -18,7 +18,7 @@ class SecurityConfiguration {
 			auth.requestMatchers("/css/*").permitAll();
 			auth.requestMatchers("/favicon.ico").permitAll();
 			auth.requestMatchers("/admin/**").access(authorizationManager);
-			auth.anyRequest().authenticated();
+			auth.anyRequest().denyAll();
 		}).build();
 	}
 
