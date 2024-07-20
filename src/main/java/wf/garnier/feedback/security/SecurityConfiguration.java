@@ -3,6 +3,7 @@ package wf.garnier.feedback.security;
 import jakarta.servlet.DispatcherType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -19,7 +20,7 @@ class SecurityConfiguration {
 			auth.requestMatchers("/favicon.ico").permitAll();
 			auth.requestMatchers("/admin/**").access(authorizationManager);
 			auth.anyRequest().denyAll();
-		}).build();
+		}).oauth2Login(Customizer.withDefaults()).build();
 	}
 
 }

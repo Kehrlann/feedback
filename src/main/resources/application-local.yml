@@ -7,3 +7,10 @@ spring:
         database-id: dgarnier-testing
         credentials:
           location: "classpath:credentials.json"
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: "<placeholder>"
+            client-secret: "<placeholder>"

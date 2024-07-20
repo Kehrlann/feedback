@@ -6,6 +6,13 @@ spring:
       datastore:
         emulator:
           enabled: true
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: "<placeholder>"
+            client-secret: "<placeholder>"
 feedback:
   admin:
     - alice@example.com
