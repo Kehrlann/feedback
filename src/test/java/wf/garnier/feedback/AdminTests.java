@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.anonymous;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -42,7 +43,13 @@ class AdminTests {
 	}
 
 	@Test
-	void index() throws Exception {
+	void accessAnonymous() throws Exception {
+		mvc.perform(get("/admin/").with(anonymous())).andExpect(status().is3xxRedirection());
+
+	}
+
+	@Test
+	void accessAllowList() throws Exception {
 		mvc.perform(get("/admin/").with(user("alice@example.com"))).andExpect(status().is2xxSuccessful());
 		mvc.perform(get("/admin/").with(user("bob@example.com"))).andExpect(status().is2xxSuccessful());
 		mvc.perform(get("/admin/").with(user("carol@example.com"))).andExpect(status().isForbidden());
