@@ -3,6 +3,8 @@ package wf.garnier.feedback;
 import java.io.IOException;
 
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.DomNode;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.google.cloud.datastore.testing.LocalDatastoreHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,8 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.anonymous;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -53,6 +57,16 @@ class AdminTests {
 		mvc.perform(get("/admin/").with(user("alice@example.com"))).andExpect(status().is2xxSuccessful());
 		mvc.perform(get("/admin/").with(user("bob@example.com"))).andExpect(status().is2xxSuccessful());
 		mvc.perform(get("/admin/").with(user("carol@example.com"))).andExpect(status().isForbidden());
+	}
+
+	@Test
+	@WithMockUser("alice@example.com")
+	void listsAllSessions() throws Exception {
+		HtmlPage htmlPage = webClient.getPage("/admin/");
+
+		var sessions = htmlPage.querySelectorAll("li").stream().map(DomNode::getTextContent).toList();
+
+		assertThat(sessions).containsExactly("Inactive session", "Other test session", "Test session");
 	}
 
 }

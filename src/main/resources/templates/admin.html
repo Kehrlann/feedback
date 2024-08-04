@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Active sessions</title>
+</head>
+<body>
+    <h1>Active sessions</h1>
+    <ul>
+        <li th:each="sess: ${sessions}" th:text="${sess.getName()}"></li>
+    </ul>
+</body>
+</html>

@@ -6,6 +6,7 @@ spring:
       datastore:
         emulator:
           enabled: true
+          consistency: 1.0
   security:
     oauth2:
       client:
