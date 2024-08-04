@@ -3,18 +3,20 @@
 ## Feedback
 
 - [x] List sessions
-- [ ] View sessions
+- [ ] View session details
 - [ ] View comments
 - [ ] View votes
 - [ ] No vote duplication
+- [ ] Order sessions by creation date
 
 ## Admin
 
-- [ ] Login with Github
+- [x] Login with Github
 - [ ] Add session
 - [ ] Edit session
 - [ ] Delete session
 - [ ] Mark inactive
+- [ ] Order sessions by creation date
 
 ## Build / ops / perf
 
