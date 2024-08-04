@@ -2,7 +2,7 @@
 
 ## Feedback
 
-- [ ] List sessions
+- [x] List sessions
 - [ ] View sessions
 - [ ] View comments
 - [ ] View votes
@@ -10,6 +10,7 @@
 
 ## Admin
 
+- [ ] Login with Github
 - [ ] Add session
 - [ ] Edit session
 - [ ] Delete session
