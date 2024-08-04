@@ -5,9 +5,17 @@
     <title>Active sessions</title>
 </head>
 <body>
-    <h1>Active sessions</h1>
-    <ul>
-        <li th:each="sess: ${sessions}" th:text="${sess.getName()}"></li>
-    </ul>
+<h1>Session management</h1>
+<h2>Existing sessions</h2>
+<ul>
+    <li th:each="sess: ${sessions}" th:text="${sess.getName()}"></li>
+</ul>
+<h2>New session</h2>
+<form action="/admin/session" method="POST">
+    <label for="new-session-name">Session title:</label>
+    <input type="text" id="new-session-name" name="name"/>
+    <input type="hidden" th:name="${_csrf.getParameterName()}" th:value="${_csrf.getToken()}"/>
+    <button type="submit" id="add-session">Add session</button>
+</form>
 </body>
 </html>

@@ -6,7 +6,9 @@ import java.util.stream.StreamSupport;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/admin")
@@ -25,6 +27,13 @@ class AdminController {
 			.toList();
 		model.addAttribute("sessions", sessions);
 		return "admin";
+	}
+
+	@PostMapping("/session")
+	String newSession(@RequestParam("name") String name) {
+		var session = new Session(name, true);
+		this.sessionRepository.save(session);
+		return "redirect:/admin";
 	}
 
 }

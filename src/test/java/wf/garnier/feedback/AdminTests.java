@@ -1,9 +1,12 @@
 package wf.garnier.feedback;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.DomNode;
+import com.gargoylesoftware.htmlunit.html.HtmlButton;
+import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.google.cloud.datastore.testing.LocalDatastoreHelper;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,6 +70,22 @@ class AdminTests {
 		var sessions = htmlPage.querySelectorAll("li").stream().map(DomNode::getTextContent).toList();
 
 		assertThat(sessions).containsExactly("Inactive session", "Other test session", "Test session");
+	}
+
+	@Test
+	@WithMockUser("alice@example.com")
+	void addSession() throws Exception {
+		var sessionTitle = "test-session " + UUID.randomUUID();
+		HtmlPage htmlPage = webClient.getPage("/admin/");
+
+		HtmlInput newSessionField = htmlPage.querySelector("#new-session-name");
+		HtmlButton addSessionButton = htmlPage.querySelector("#add-session");
+
+		newSessionField.type(sessionTitle);
+		htmlPage = addSessionButton.click();
+
+		var sessions = htmlPage.querySelectorAll("li").stream().map(DomNode::getTextContent);
+		assertThat(sessions).contains(sessionTitle);
 	}
 
 }
