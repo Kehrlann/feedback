@@ -14,3 +14,12 @@ spring:
           github:
             client-id: "<placeholder>"
             client-secret: "<placeholder>"
+            scope:
+              - "read:user"
+              - "user:email"
+        provider:
+          github:
+            user-name-attribute: email
+feedback:
+  admin:
+    - git@garnier.wf
