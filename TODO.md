@@ -18,7 +18,12 @@
 - [ ] Mark inactive
 - [ ] Order sessions by creation date
 
+## All
+
+- [ ] Styling
+
 ## Build / ops / perf
 
 - [ ] Buildpack
 - [ ] GraalVM
+- [ ] Deploy
