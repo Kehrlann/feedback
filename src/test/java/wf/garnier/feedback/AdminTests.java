@@ -11,6 +11,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.google.cloud.datastore.testing.LocalDatastoreHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,8 +22,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.anonymous;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -73,6 +77,11 @@ class AdminTests {
 	}
 
 	@Test
+	void addSessionIsProtected() throws Exception {
+		mvc.perform(post("/admin/session").param("name", "new session")).andExpect(status().isForbidden());
+	}
+
+	@Test
 	@WithMockUser("alice@example.com")
 	void addSession() throws Exception {
 		var sessionTitle = "test-session " + UUID.randomUUID();
@@ -86,6 +95,34 @@ class AdminTests {
 
 		var sessions = htmlPage.querySelectorAll("li").stream().map(DomNode::getTextContent);
 		assertThat(sessions).contains(sessionTitle);
+	}
+
+	@ParameterizedTest
+	@WithMockUser("alice@example.com")
+	@ValueSource(strings = { "", "    ", "	" })
+	void addSessionBlankTitle(String title) throws Exception {
+		HtmlPage htmlPage = webClient.getPage("/admin/");
+		var initialSessionCount = htmlPage.querySelectorAll("li").size();
+
+		HtmlButton addSessionButton = htmlPage.querySelector("#add-session");
+		HtmlInput newSessionField = htmlPage.querySelector("#new-session-name");
+
+		newSessionField.type(title);
+		htmlPage = addSessionButton.click();
+
+		var sessions = htmlPage.querySelectorAll("li").stream().map(DomNode::getTextContent);
+		var sessionCount = htmlPage.querySelectorAll("li").size();
+		assertThat(initialSessionCount).isEqualTo(sessionCount);
+		assertThat(sessions).allMatch((name) -> !name.isBlank());
+	}
+
+	@Test
+	@WithMockUser("alice@example.com")
+	void postSessionBlankTitle() throws Exception {
+		mvc.perform(post("/admin/session").with(csrf())).andExpect(status().isBadRequest());
+		mvc.perform(post("/admin/session").param("name", "   ").with(csrf())).andExpect(status().isBadRequest());
+		mvc.perform(post("/admin/session").param("name", "	").with(csrf())).andExpect(status().isBadRequest());
+		mvc.perform(post("/admin/session").param("name", "").with(csrf())).andExpect(status().isBadRequest());
 	}
 
 }

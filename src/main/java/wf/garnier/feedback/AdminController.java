@@ -3,6 +3,7 @@ package wf.garnier.feedback;
 import java.util.Comparator;
 import java.util.stream.StreamSupport;
 
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +31,7 @@ class AdminController {
 	}
 
 	@PostMapping("/session")
-	String newSession(@RequestParam("name") String name) {
+	String newSession(@RequestParam("name") @NotBlank String name) {
 		var session = new Session(name, true);
 		this.sessionRepository.save(session);
 		return "redirect:/admin";
