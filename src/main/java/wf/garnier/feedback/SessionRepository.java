@@ -8,4 +8,6 @@ interface SessionRepository extends DatastoreRepository<Session, String> {
 
 	List<Session> findSessionByActiveEquals(Boolean active);
 
+	void deleteBySessionId(String sessionId);
+
 }

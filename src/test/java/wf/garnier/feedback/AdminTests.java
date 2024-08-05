@@ -1,7 +1,9 @@
 package wf.garnier.feedback;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.DomNode;
@@ -71,7 +73,7 @@ class AdminTests {
 	void listsAllSessions() throws Exception {
 		HtmlPage htmlPage = webClient.getPage("/admin/");
 
-		var sessions = htmlPage.querySelectorAll("li").stream().map(DomNode::getTextContent).toList();
+		var sessions = getSessionTitles(htmlPage).toList();
 
 		assertThat(sessions).containsExactly("Inactive session", "Other test session", "Test session");
 	}
@@ -93,7 +95,7 @@ class AdminTests {
 		newSessionField.type(sessionTitle);
 		htmlPage = addSessionButton.click();
 
-		var sessions = htmlPage.querySelectorAll("li").stream().map(DomNode::getTextContent);
+		var sessions = getSessionTitles(htmlPage);
 		assertThat(sessions).contains(sessionTitle);
 	}
 
@@ -102,7 +104,7 @@ class AdminTests {
 	@ValueSource(strings = { "", "    ", "	" })
 	void addSessionBlankTitle(String title) throws Exception {
 		HtmlPage htmlPage = webClient.getPage("/admin/");
-		var initialSessionCount = htmlPage.querySelectorAll("li").size();
+		var initialSessionCount = countSessions(htmlPage);
 
 		HtmlButton addSessionButton = htmlPage.querySelector("#add-session");
 		HtmlInput newSessionField = htmlPage.querySelector("#new-session-name");
@@ -110,8 +112,8 @@ class AdminTests {
 		newSessionField.type(title);
 		htmlPage = addSessionButton.click();
 
-		var sessions = htmlPage.querySelectorAll("li").stream().map(DomNode::getTextContent);
-		var sessionCount = htmlPage.querySelectorAll("li").size();
+		var sessions = getSessionTitles(htmlPage);
+		var sessionCount = countSessions(htmlPage);
 		assertThat(initialSessionCount).isEqualTo(sessionCount);
 		assertThat(sessions).allMatch((name) -> !name.isBlank());
 	}
@@ -123,6 +125,42 @@ class AdminTests {
 		mvc.perform(post("/admin/session").param("name", "   ").with(csrf())).andExpect(status().isBadRequest());
 		mvc.perform(post("/admin/session").param("name", "	").with(csrf())).andExpect(status().isBadRequest());
 		mvc.perform(post("/admin/session").param("name", "").with(csrf())).andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@WithMockUser("alice@example.com")
+	void deleteSession() throws Exception {
+		var sessionTitle = "test-session-delete " + UUID.randomUUID();
+		HtmlPage htmlPage = webClient.getPage("/admin/");
+		var initialSessionCount = countSessions(htmlPage);
+
+		HtmlInput newSessionField = htmlPage.querySelector("#new-session-name");
+		HtmlButton addSessionButton = htmlPage.querySelector("#add-session");
+
+		newSessionField.type(sessionTitle);
+		htmlPage = addSessionButton.click();
+		assertThat(countSessions(htmlPage)).isEqualTo(initialSessionCount + 1);
+
+		var deleteButton = htmlPage.querySelectorAll("li")
+			.stream()
+			.filter((list) -> list.getTextContent().contains(sessionTitle))
+			.<HtmlButton>map((list) -> list.querySelector("button"))
+			.filter(Objects::nonNull)
+			.findFirst();
+
+		assertThat(deleteButton).isPresent();
+		htmlPage = deleteButton.get().click();
+
+		assertThat(getSessionTitles(htmlPage)).doesNotContain(sessionTitle);
+		assertThat(countSessions(htmlPage)).isEqualTo(initialSessionCount);
+	}
+
+	private static int countSessions(HtmlPage htmlPage) {
+		return htmlPage.querySelectorAll("li").size();
+	}
+
+	private static Stream<String> getSessionTitles(HtmlPage htmlPage) {
+		return htmlPage.querySelectorAll("li [data-role=\"description\"]").stream().map(DomNode::getTextContent);
 	}
 
 }

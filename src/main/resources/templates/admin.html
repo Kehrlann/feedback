@@ -8,7 +8,14 @@
 <h1>Session management</h1>
 <h2>Existing sessions</h2>
 <ul>
-    <li th:each="sess: ${sessions}" th:text="${sess.getName()}"></li>
+    <li th:each="sess: ${sessions}">
+        <span th:text="${sess.getName()}" data-role="description"></span>
+        <form action="/admin/session/delete" method="POST">
+            <input type="hidden" th:name="${_csrf.getParameterName()}" th:value="${_csrf.getToken()}"/>
+            <input type="hidden" name="session-id" th:value="${sess.sessionId}"/>
+            <button type="submit">Delete</button>
+        </form>
+    </li>
 </ul>
 <h2>New session</h2>
 <form action="/admin/session" method="POST">

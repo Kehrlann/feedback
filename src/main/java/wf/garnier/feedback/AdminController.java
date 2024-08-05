@@ -37,4 +37,10 @@ class AdminController {
 		return "redirect:/admin";
 	}
 
+	@PostMapping("/session/delete")
+	String deleteSession(@RequestParam("session-id") String sessionId) {
+		this.sessionRepository.deleteBySessionId(sessionId);
+		return "redirect:/admin";
+	}
+
 }
