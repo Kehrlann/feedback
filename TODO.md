@@ -12,15 +12,17 @@
 ## Admin
 
 - [x] Login with Github
-- [ ] Add session
+- [x] Add session
+- [x] Delete session
+- [x] Toggle active / inactive
 - [ ] Edit session
-- [ ] Delete session
-- [ ] Mark inactive
 - [ ] Order sessions by creation date
 
 ## All
 
 - [ ] Styling
+- [ ] Try out jstachio
+- [ ] Try out HTMX (?)
 
 ## Build / ops / perf
 
