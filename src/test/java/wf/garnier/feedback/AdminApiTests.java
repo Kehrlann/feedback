@@ -108,6 +108,38 @@ class AdminApiTests {
 		assertThat(this.sessionRepository.findSessionBySessionId(savedSession.getSessionId())).isPresent();
 	}
 
+	@Test
+	@WithMockUser("alice@example.com")
+	void toggleActiveSession() throws Exception {
+		var savedActiveSession = createSession(true);
+		var savedInactiveSession = createSession(false);
+
+		mvc.perform(post("/admin/session/toggle-active").param("session-id", savedActiveSession.getSessionId())
+			.param("active", "false")
+			.with(csrf())).andExpect(status().is3xxRedirection()).andExpect(redirectedUrl("/admin"));
+
+		mvc.perform(post("/admin/session/toggle-active").param("session-id", savedInactiveSession.getSessionId())
+			.param("active", "true")
+			.with(csrf())).andExpect(status().is3xxRedirection()).andExpect(redirectedUrl("/admin"));
+
+		var updatedActiveSession = this.sessionRepository.findSessionBySessionId(savedActiveSession.getSessionId());
+		var updatedInactiveSession = this.sessionRepository.findSessionBySessionId(savedInactiveSession.getSessionId());
+		assertThat(updatedActiveSession).isPresent().get().extracting(Session::getActive).isEqualTo(false);
+		assertThat(updatedInactiveSession).isPresent().get().extracting(Session::getActive).isEqualTo(true);
+	}
+
+	@Test
+	void toggleActiveSessionIsProtected() throws Exception {
+		var savedActiveSession = createSession(true);
+
+		mvc.perform(post("/admin/session/toggle-active").param("session-id", savedActiveSession.getSessionId())
+			.param("active", "false")
+			.with(csrf())).andExpect(status().is3xxRedirection()).andExpect(redirectedUrl(LOGIN_URL));
+
+		var updatedActiveSession = this.sessionRepository.findSessionBySessionId(savedActiveSession.getSessionId());
+		assertThat(updatedActiveSession).isPresent().get().extracting(Session::getActive).isEqualTo(true);
+	}
+
 	private Session createSession() {
 		return createSession(true);
 	}
