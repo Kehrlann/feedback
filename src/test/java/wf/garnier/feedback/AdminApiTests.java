@@ -90,28 +90,31 @@ class AdminApiTests {
 	@Test
 	@WithMockUser("alice@example.com")
 	void deleteSession() throws Exception {
-		var sessionName = "session-delete " + UUID.randomUUID();
-		var session = new Session(sessionName, true);
-		var savedSession = this.sessionRepository.save(session);
+		var savedSession = createSession();
 
 		mvc.perform(post("/admin/session/delete").param("session-id", savedSession.getSessionId()).with(csrf()))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(redirectedUrl("/admin"));
-		assertThat(StreamSupport.stream(sessionRepository.findAll().spliterator(), false)).map(Session::getName)
-			.noneMatch(sessionName::equals);
+		assertThat(this.sessionRepository.findSessionBySessionId(savedSession.getSessionId())).isEmpty();
 	}
 
 	@Test
 	void deleteSessionIsProtected() throws Exception {
-		var sessionName = "session-delete " + UUID.randomUUID();
-		var session = new Session(sessionName, true);
-		var savedSession = this.sessionRepository.save(session);
+		var savedSession = createSession();
 
 		mvc.perform(post("/admin/session/delete").param("session-id", savedSession.getSessionId()).with(csrf()))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(redirectedUrl(LOGIN_URL));
-		assertThat(StreamSupport.stream(sessionRepository.findAll().spliterator(), false)).map(Session::getName)
-			.anyMatch(sessionName::equals);
+		assertThat(this.sessionRepository.findSessionBySessionId(savedSession.getSessionId())).isPresent();
+	}
+
+	private Session createSession() {
+		return createSession(true);
+	}
+
+	private Session createSession(boolean active) {
+		var activeSession = new Session("test-session-" + UUID.randomUUID(), active);
+		return this.sessionRepository.save(activeSession);
 	}
 
 }
