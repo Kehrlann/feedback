@@ -1,6 +1,8 @@
 package wf.garnier.feedback;
 
 import java.io.IOException;
+import java.util.UUID;
+import java.util.stream.StreamSupport;
 
 import com.google.cloud.datastore.testing.LocalDatastoreHelper;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,11 +14,13 @@ import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.anonymous;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -32,6 +36,8 @@ class AdminApiTests {
 
 	@Autowired
 	LocalDatastoreHelper datastoreHelper;
+
+	private String LOGIN_URL = "http://localhost/oauth2/authorization/github";
 
 	@BeforeEach
 	void setUp() throws IOException {
@@ -55,17 +61,57 @@ class AdminApiTests {
 	}
 
 	@Test
+	@WithMockUser("alice@example.com")
+	void addSession() throws Exception {
+		var sessionName = "session-add " + UUID.randomUUID();
+		mvc.perform(post("/admin/session").param("name", sessionName).with(csrf()))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(redirectedUrl("/admin"));
+		assertThat(StreamSupport.stream(sessionRepository.findAll().spliterator(), false)).map(Session::getName)
+			.anyMatch(sessionName::equals);
+	}
+
+	@Test
 	void addSessionIsProtected() throws Exception {
-		mvc.perform(post("/admin/session").param("name", "new session")).andExpect(status().isForbidden());
+		mvc.perform(post("/admin/session").param("name", "new session").with(csrf()))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(redirectedUrl(LOGIN_URL));
 	}
 
 	@Test
 	@WithMockUser("alice@example.com")
-	void postSessionBlankTitle() throws Exception {
+	void addSessionBlankTitle() throws Exception {
 		mvc.perform(post("/admin/session").with(csrf())).andExpect(status().isBadRequest());
 		mvc.perform(post("/admin/session").param("name", "   ").with(csrf())).andExpect(status().isBadRequest());
 		mvc.perform(post("/admin/session").param("name", "	").with(csrf())).andExpect(status().isBadRequest());
 		mvc.perform(post("/admin/session").param("name", "").with(csrf())).andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@WithMockUser("alice@example.com")
+	void deleteSession() throws Exception {
+		var sessionName = "session-delete " + UUID.randomUUID();
+		var session = new Session(sessionName, true);
+		var savedSession = this.sessionRepository.save(session);
+
+		mvc.perform(post("/admin/session/delete").param("session-id", savedSession.getSessionId()).with(csrf()))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(redirectedUrl("/admin"));
+		assertThat(StreamSupport.stream(sessionRepository.findAll().spliterator(), false)).map(Session::getName)
+			.noneMatch(sessionName::equals);
+	}
+
+	@Test
+	void deleteSessionIsProtected() throws Exception {
+		var sessionName = "session-delete " + UUID.randomUUID();
+		var session = new Session(sessionName, true);
+		var savedSession = this.sessionRepository.save(session);
+
+		mvc.perform(post("/admin/session/delete").param("session-id", savedSession.getSessionId()).with(csrf()))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(redirectedUrl(LOGIN_URL));
+		assertThat(StreamSupport.stream(sessionRepository.findAll().spliterator(), false)).map(Session::getName)
+			.anyMatch(sessionName::equals);
 	}
 
 }
