@@ -2,8 +2,10 @@ package wf.garnier.feedback;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.DomNode;
@@ -87,13 +89,7 @@ class AdminTests {
 	@WithMockUser("alice@example.com")
 	void addSession() throws Exception {
 		var sessionTitle = "test-session " + UUID.randomUUID();
-		HtmlPage htmlPage = webClient.getPage("/admin/");
-
-		HtmlInput newSessionField = htmlPage.querySelector("#new-session-name");
-		HtmlButton addSessionButton = htmlPage.querySelector("#add-session");
-
-		newSessionField.type(sessionTitle);
-		htmlPage = addSessionButton.click();
+		var htmlPage = addSession(sessionTitle);
 
 		var sessions = getSessionTitles(htmlPage);
 		assertThat(sessions).contains(sessionTitle);
@@ -144,7 +140,7 @@ class AdminTests {
 		var deleteButton = htmlPage.querySelectorAll("li")
 			.stream()
 			.filter((list) -> list.getTextContent().contains(sessionTitle))
-			.<HtmlButton>map((list) -> list.querySelector("button"))
+			.<HtmlButton>map((list) -> list.querySelector("button[data-role=\"delete\"]"))
 			.filter(Objects::nonNull)
 			.findFirst();
 
@@ -155,12 +151,67 @@ class AdminTests {
 		assertThat(countSessions(htmlPage)).isEqualTo(initialSessionCount);
 	}
 
+	@Test
+	@WithMockUser("alice@example.com")
+	void toggleActiveInactive() throws Exception {
+		var sessionTitle = "test-session-active " + UUID.randomUUID();
+		var htmlPage = addSession(sessionTitle);
+
+		var newSession = getSessionByTitle(htmlPage, sessionTitle);
+		assertThat(newSession).isPresent();
+		HtmlButton toggleActiveButton = newSession.get().querySelector("button[data-role=\"toggle-active\"]");
+		assertThat(toggleActiveButton.getTextContent()).isEqualTo("Set to inactive");
+		assertThat(loadSessionByName(sessionTitle)).extracting(Session::getActive).isEqualTo(true);
+
+		htmlPage = toggleActiveButton.click();
+
+		newSession = getSessionByTitle(htmlPage, sessionTitle);
+		assertThat(newSession).isPresent();
+		toggleActiveButton = newSession.get().querySelector("button[data-role=\"toggle-active\"]");
+		assertThat(toggleActiveButton.getTextContent()).isEqualTo("Set to active");
+		assertThat(loadSessionByName(sessionTitle)).extracting(Session::getActive).isEqualTo(false);
+
+		htmlPage = toggleActiveButton.click();
+
+		newSession = getSessionByTitle(htmlPage, sessionTitle);
+		assertThat(newSession).isPresent();
+		toggleActiveButton = newSession.get().querySelector("button[data-role=\"toggle-active\"]");
+		assertThat(toggleActiveButton.getTextContent()).isEqualTo("Set to inactive");
+		assertThat(loadSessionByName(sessionTitle)).extracting(Session::getActive).isEqualTo(true);
+	}
+
+	private static Optional<DomNode> getSessionByTitle(HtmlPage htmlPage, String sessionTitle) {
+		return htmlPage.querySelectorAll("li")
+			.stream()
+			.filter((node) -> node.getTextContent().contains(sessionTitle))
+			.findFirst();
+	}
+
+	private Session loadSessionByName(String sessionTitle) {
+		var sessionByName = StreamSupport.stream(this.sessionRepository.findAll().spliterator(), false)
+			.filter((session) -> session.getName().equals(sessionTitle))
+			.findFirst();
+		assertThat(sessionByName).withFailMessage("could not find session with title: " + sessionTitle).isPresent();
+		return sessionByName.get();
+	}
+
 	private static int countSessions(HtmlPage htmlPage) {
 		return htmlPage.querySelectorAll("li").size();
 	}
 
 	private static Stream<String> getSessionTitles(HtmlPage htmlPage) {
 		return htmlPage.querySelectorAll("li [data-role=\"description\"]").stream().map(DomNode::getTextContent);
+	}
+
+	private HtmlPage addSession(String sessionTitle) throws IOException {
+		HtmlPage htmlPage = webClient.getPage("/admin/");
+
+		HtmlInput newSessionField = htmlPage.querySelector("#new-session-name");
+		HtmlButton addSessionButton = htmlPage.querySelector("#add-session");
+
+		newSessionField.type(sessionTitle);
+		htmlPage = addSessionButton.click();
+		return htmlPage;
 	}
 
 }

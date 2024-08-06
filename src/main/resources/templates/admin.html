@@ -3,6 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Active sessions</title>
+    <style>
+        .action-buttons {
+            display: inline-block;
+            margin: 0 2px;
+        }
+    </style>
 </head>
 <body>
 <h1>Session management</h1>
@@ -10,10 +16,18 @@
 <ul>
     <li th:each="sess: ${sessions}">
         <span th:text="${sess.getName()}" data-role="description"></span>
-        <form action="/admin/session/delete" method="POST">
+        <form action="/admin/session/delete" method="POST" class="action-buttons">
+            <button type="submit" data-role="delete">Delete</button>
             <input type="hidden" th:name="${_csrf.getParameterName()}" th:value="${_csrf.getToken()}"/>
-            <input type="hidden" name="session-id" th:value="${sess.sessionId}"/>
-            <button type="submit">Delete</button>
+            <input type="hidden" name="session-id" th:value="${sess.getSessionId()}"/>
+        </form>
+        <form action="/admin/session/toggle-active" method="POST" class="action-buttons">
+            <button type="submit" data-role="toggle-active"
+                    th:text="${sess.getActive() ? 'Set to inactive' : 'Set to active'}">
+            </button>
+            <input type="hidden" th:name="${_csrf.getParameterName()}" th:value="${_csrf.getToken()}"/>
+            <input type="hidden" name="session-id" th:value="${sess.getSessionId()}"/>
+            <input type="hidden" name="active" th:value="${!sess.getActive()}"/>
         </form>
     </li>
 </ul>

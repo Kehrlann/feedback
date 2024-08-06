@@ -43,4 +43,12 @@ class AdminController {
 		return "redirect:/admin";
 	}
 
+	@PostMapping("/session/toggle-active")
+	String toggleActive(@RequestParam("session-id") String sessionId, @RequestParam("active") boolean active) {
+		var session = this.sessionRepository.findSessionBySessionId(sessionId).get();
+		session.setActive(active);
+		this.sessionRepository.save(session);
+		return "redirect:/admin";
+	}
+
 }
