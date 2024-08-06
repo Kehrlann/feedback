@@ -1,6 +1,7 @@
 package wf.garnier.feedback;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.UUID;
 
 import com.google.cloud.datastore.Key;
@@ -36,6 +37,7 @@ public class Session {
 		this.sessionId = UUID.randomUUID().toString();
 		this.name = name;
 		this.active = active;
+		this.creationTime = LocalDateTime.now(ZoneId.of("UTC"));
 	}
 
 	public Key getKey() {
