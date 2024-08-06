@@ -22,23 +22,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.anonymous;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Import(EmulatorConfiguration.class)
-class AdminTests {
-
-	@Autowired
-	MockMvc mvc;
+class AdminWebTests {
 
 	@Autowired
 	WebClient webClient;
@@ -58,19 +48,6 @@ class AdminTests {
 	}
 
 	@Test
-	void accessAnonymous() throws Exception {
-		mvc.perform(get("/admin/").with(anonymous())).andExpect(status().is3xxRedirection());
-
-	}
-
-	@Test
-	void accessAllowList() throws Exception {
-		mvc.perform(get("/admin/").with(user("alice@example.com"))).andExpect(status().is2xxSuccessful());
-		mvc.perform(get("/admin/").with(user("bob@example.com"))).andExpect(status().is2xxSuccessful());
-		mvc.perform(get("/admin/").with(user("carol@example.com"))).andExpect(status().isForbidden());
-	}
-
-	@Test
 	@WithMockUser("alice@example.com")
 	void listsAllSessions() throws Exception {
 		HtmlPage htmlPage = webClient.getPage("/admin/");
@@ -78,11 +55,6 @@ class AdminTests {
 		var sessions = getSessionTitles(htmlPage).toList();
 
 		assertThat(sessions).containsExactly("Inactive session", "Other test session", "Test session");
-	}
-
-	@Test
-	void addSessionIsProtected() throws Exception {
-		mvc.perform(post("/admin/session").param("name", "new session")).andExpect(status().isForbidden());
 	}
 
 	@Test
@@ -112,15 +84,6 @@ class AdminTests {
 		var sessionCount = countSessions(htmlPage);
 		assertThat(initialSessionCount).isEqualTo(sessionCount);
 		assertThat(sessions).allMatch((name) -> !name.isBlank());
-	}
-
-	@Test
-	@WithMockUser("alice@example.com")
-	void postSessionBlankTitle() throws Exception {
-		mvc.perform(post("/admin/session").with(csrf())).andExpect(status().isBadRequest());
-		mvc.perform(post("/admin/session").param("name", "   ").with(csrf())).andExpect(status().isBadRequest());
-		mvc.perform(post("/admin/session").param("name", "	").with(csrf())).andExpect(status().isBadRequest());
-		mvc.perform(post("/admin/session").param("name", "").with(csrf())).andExpect(status().isBadRequest());
 	}
 
 	@Test
