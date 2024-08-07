@@ -16,6 +16,7 @@ class SecurityConfiguration {
 		return http.authorizeHttpRequests((auth) -> {
 			auth.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll();
 			auth.requestMatchers("/").permitAll();
+			auth.requestMatchers("/session/**").permitAll();
 			auth.requestMatchers("/css/*").permitAll();
 			auth.requestMatchers("/favicon.ico").permitAll();
 			auth.requestMatchers("/admin/**").access(authorizationManager);

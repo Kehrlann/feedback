@@ -5,6 +5,7 @@ import java.util.Comparator;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 class SessionController {
@@ -23,6 +24,13 @@ class SessionController {
 			.toList();
 		model.addAttribute("sessions", sessions);
 		return "index";
+	}
+
+	@GetMapping("/session/{sessionId}")
+	String session(@PathVariable("sessionId") String sessionId, Model model) {
+		var session = this.sessionRepository.findSessionBySessionId(sessionId).get();
+		model.addAttribute("currentSession", session);
+		return "session";
 	}
 
 }
