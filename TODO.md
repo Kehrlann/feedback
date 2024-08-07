@@ -7,6 +7,7 @@
 - [ ] View comments
 - [ ] View votes
 - [ ] No vote duplication
+- [ ] QR code
 - [ ] Order sessions by creation date
 
 ## Admin
