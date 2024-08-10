@@ -43,4 +43,11 @@ class SessionControllerTests {
 		assertThat(htmlPage.querySelector("h1").getTextContent()).isEqualTo(session.getName());
 	}
 
+	@Test
+	void navigateHome() throws Exception {
+		HtmlPage htmlPage = webClient.getPage("/session/" + session.getSessionId());
+		htmlPage = htmlPage.getElementById("home").click();
+		assertThat(htmlPage.getUrl().getPath()).isEqualTo("/");
+	}
+
 }
