@@ -1,52 +1,24 @@
 package wf.garnier.feedback;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlButton;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.google.cloud.datastore.testing.LocalDatastoreHelper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@Import(EmulatorConfiguration.class)
-class AdminWebTests {
-
-	@Autowired
-	WebClient webClient;
-
-	@Autowired
-	SessionRepository sessionRepository;
-
-	@Autowired
-	LocalDatastoreHelper datastoreHelper;
-
-	@BeforeEach
-	void setUp() throws IOException {
-		datastoreHelper.reset();
-		sessionRepository.save(new Session("Test session"));
-		sessionRepository.save(new Session("Other test session"));
-		sessionRepository.save(new Session("Inactive session", false, Collections.emptyList()));
-	}
+class AdminWebTests extends TestBase {
 
 	@Test
 	@WithMockUser("alice@example.com")

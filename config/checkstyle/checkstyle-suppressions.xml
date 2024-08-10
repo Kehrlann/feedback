@@ -15,6 +15,5 @@
     <suppress files=".*" checks="InnerTypeLastCheck"/>
     <suppress files="ConfigurationPrinter.*\.java" checks="SpringLeadingWhitespace"/>
     <suppress files="CustomConfigurationTests\.java" checks="SpringLeadingWhitespace"/>
-    <suppress files="DevAuthServerTest.java" checks="SpringTestFileName"/>
     <suppress files="[\\/]generated[\\/]" checks="[a-zA-Z0-9]*"/>
 </suppressions>
