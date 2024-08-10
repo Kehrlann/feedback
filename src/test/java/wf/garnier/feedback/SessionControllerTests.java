@@ -33,7 +33,7 @@ class SessionControllerTests {
 	@BeforeEach
 	void setUp() throws IOException {
 		datastoreHelper.reset();
-		session = sessionRepository.save(new Session("Test session", true));
+		session = sessionRepository.save(new Session("Test session"));
 	}
 
 	@Test

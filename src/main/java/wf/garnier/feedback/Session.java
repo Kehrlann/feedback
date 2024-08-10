@@ -51,12 +51,16 @@ public class Session {
 	public Session() {
 	}
 
-	public Session(String name, Boolean active) {
+	public Session(String name) {
+		this(name, true, DEFAULT_FEEDBACK_CHOICES);
+	}
+
+	public Session(String name, Boolean active, List<String> feedbackChoices) {
 		this.sessionId = UUID.randomUUID().toString();
 		this.name = name;
 		this.active = active;
 		this.creationTime = LocalDateTime.now(ZoneId.of("UTC"));
-		this.feedbackChoices = Session.DEFAULT_FEEDBACK_CHOICES;
+		this.feedbackChoices = feedbackChoices;
 	}
 
 	public Key getKey() {

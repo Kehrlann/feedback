@@ -32,7 +32,7 @@ class AdminController {
 
 	@PostMapping("/session")
 	String newSession(@RequestParam("name") @NotBlank String name) {
-		var session = new Session(name, true);
+		var session = new Session(name);
 		this.sessionRepository.save(session);
 		return "redirect:/admin";
 	}

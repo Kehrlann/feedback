@@ -1,6 +1,7 @@
 package wf.garnier.feedback;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.DomNode;
@@ -32,9 +33,9 @@ class FeedbackApplicationTests {
 	@BeforeEach
 	void setUp() throws IOException {
 		datastoreHelper.reset();
-		sessionRepository.save(new Session("Test session", true));
-		sessionRepository.save(new Session("Other test session", true));
-		sessionRepository.save(new Session("Inactive session", false));
+		sessionRepository.save(new Session("Test session"));
+		sessionRepository.save(new Session("Other test session"));
+		sessionRepository.save(new Session("Inactive session", false, Collections.emptyList()));
 	}
 
 	@Test

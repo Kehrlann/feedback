@@ -12,7 +12,7 @@ class SessionTests {
 	@Test
 	void constructor() {
 		var beforeCreation = LocalDateTime.now(ZoneId.of("UTC"));
-		var session = new Session("session name", true);
+		var session = new Session("session name");
 		var afterCreation = LocalDateTime.now(ZoneId.of("UTC"));
 
 		assertThat(session.getName()).isEqualTo("session name");
