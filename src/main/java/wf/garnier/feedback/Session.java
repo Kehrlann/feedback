@@ -2,6 +2,7 @@ package wf.garnier.feedback;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.UUID;
 
 import com.google.cloud.datastore.Key;
@@ -30,6 +31,23 @@ public class Session {
 	@Unindexed
 	private LocalDateTime creationTime;
 
+	@Unindexed
+	@Field(name = "feedback_choices")
+	private List<String> feedbackChoices;
+
+	//@formatter:off
+	private static final List<String> DEFAULT_FEEDBACK_CHOICES = List.of(
+			"Fun",
+			"Interesting",
+			"I've learned something new",
+			"Good speaker",
+			"Not clear",
+			"Too complicated",
+			"Too fast",
+			"Too slow"
+	);
+	//@formatter:on
+
 	public Session() {
 	}
 
@@ -38,6 +56,7 @@ public class Session {
 		this.name = name;
 		this.active = active;
 		this.creationTime = LocalDateTime.now(ZoneId.of("UTC"));
+		this.feedbackChoices = Session.DEFAULT_FEEDBACK_CHOICES;
 	}
 
 	public Key getKey() {
@@ -80,10 +99,19 @@ public class Session {
 		this.creationTime = creationTime;
 	}
 
+	public List<String> getFeedbackChoices() {
+		return this.feedbackChoices;
+	}
+
+	public void setFeedbackChoices(List<String> feedbackChoices) {
+		this.feedbackChoices = feedbackChoices;
+	}
+
 	@Override
 	public String toString() {
 		return "Session{" + "key=" + this.key + ", sessionId='" + this.sessionId + '\'' + ", name='" + this.name + '\''
-				+ ", active=" + this.active + ", creationTime=" + this.creationTime + '}';
+				+ ", active=" + this.active + ", creationTime=" + this.creationTime + ", feedbackChoices="
+				+ this.feedbackChoices + '}';
 	}
 
 }
