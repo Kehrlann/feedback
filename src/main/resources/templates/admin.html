@@ -8,6 +8,15 @@
             display: inline-block;
             margin: 0 2px;
         }
+
+        .vertical {
+            display: flex;
+            flex-direction: column;
+            max-width: 300px;
+            & > * {
+                margin-top: 5px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -31,12 +40,14 @@
         </form>
     </li>
 </ul>
+<br>
 <h2>New session</h2>
-<form action="/admin/session" method="POST">
-    <label for="new-session-name">Session title (not blank): </label>
+<form action="/admin/session" method="POST" class="vertical">
+    <label for="new-session-name">Session name (not blank): </label>
     <!-- Pattern: name is not blank -->
     <input type="text" id="new-session-name" name="name" required pattern="^(?!\s*$).*"/>
-    <input type="text" id="new-session-description" name="description" />
+    <label for="new-session-description">Session description (optional): </label>
+    <input type="text" id="new-session-description" name="description"/>
     <input type="hidden" th:name="${_csrf.getParameterName()}" th:value="${_csrf.getToken()}"/>
     <button type="submit" id="add-session">Add session</button>
 </form>
