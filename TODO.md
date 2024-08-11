@@ -9,6 +9,7 @@
 - [ ] No vote duplication
 - [ ] QR code
 - [ ] Order sessions by creation date
+- [ ] Don't show parentheses on null session description
 
 ## Admin
 
