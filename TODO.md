@@ -30,3 +30,4 @@
 - [ ] Buildpack
 - [ ] GraalVM
 - [ ] Deploy
+- [ ] Consider caching
