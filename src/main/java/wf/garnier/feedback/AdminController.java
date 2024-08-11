@@ -31,8 +31,9 @@ class AdminController {
 	}
 
 	@PostMapping("/session")
-	String newSession(@RequestParam("name") @NotBlank String name) {
-		var session = new Session(name, "");
+	String newSession(@RequestParam("name") @NotBlank String name,
+			@RequestParam(value = "description", required = false) String description) {
+		var session = new Session(name, description);
 		this.sessionRepository.save(session);
 		return "redirect:/admin";
 	}

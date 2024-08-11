@@ -27,17 +27,19 @@ class AdminWebTests extends TestBase {
 
 		var sessions = getSessionTitles(htmlPage).toList();
 
-		assertThat(sessions).containsExactly("Inactive session", "Other test session", "Test session");
+		assertThat(sessions).containsExactly("Inactive session (MiXiT, 2024-04-29)",
+				"Other test session (SpringIO, 2024-05-30)", "Test session (Some Conference, 2024-04-22)");
 	}
 
 	@Test
 	@WithMockUser("alice@example.com")
 	void addSession() throws Exception {
 		var sessionTitle = "test-session " + UUID.randomUUID();
-		var htmlPage = addSession(sessionTitle);
+		var sessionDescription = "This is a test session";
+		var htmlPage = addSession(sessionTitle, sessionDescription);
 
 		var sessions = getSessionTitles(htmlPage);
-		assertThat(sessions).contains(sessionTitle);
+		assertThat(sessions).contains("%s (%s)".formatted(sessionTitle, sessionDescription));
 	}
 
 	@ParameterizedTest
@@ -91,7 +93,7 @@ class AdminWebTests extends TestBase {
 	@WithMockUser("alice@example.com")
 	void toggleActiveInactive() throws Exception {
 		var sessionTitle = "test-session-active " + UUID.randomUUID();
-		var htmlPage = addSession(sessionTitle);
+		var htmlPage = addSession(sessionTitle, null);
 
 		var newSession = getSessionByTitle(htmlPage, sessionTitle);
 		assertThat(newSession).isPresent();
@@ -139,13 +141,17 @@ class AdminWebTests extends TestBase {
 		return htmlPage.querySelectorAll("li [data-role=\"description\"]").stream().map(DomNode::getTextContent);
 	}
 
-	private HtmlPage addSession(String sessionTitle) throws IOException {
+	private HtmlPage addSession(String sessionTitle, String sessionDescription) throws IOException {
 		HtmlPage htmlPage = webClient.getPage("/admin/");
 
-		HtmlInput newSessionField = htmlPage.querySelector("#new-session-name");
+		HtmlInput sessionNameField = htmlPage.querySelector("#new-session-name");
+		HtmlInput sessionDescriptionField = htmlPage.querySelector("#new-session-description");
 		HtmlButton addSessionButton = htmlPage.querySelector("#add-session");
 
-		newSessionField.type(sessionTitle);
+		sessionNameField.type(sessionTitle);
+		if (sessionDescription != null) {
+			sessionDescriptionField.type(sessionDescription);
+		}
 		htmlPage = addSessionButton.click();
 		return htmlPage;
 	}

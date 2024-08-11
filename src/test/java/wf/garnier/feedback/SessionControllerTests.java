@@ -23,7 +23,8 @@ class SessionControllerTests extends TestBase {
 	void viewSession() throws Exception {
 		HtmlPage htmlPage = webClient.getPage("/session/" + session.getSessionId());
 
-		assertThat(htmlPage.querySelector("h1").getTextContent()).isEqualTo(session.getName());
+		assertThat(htmlPage.querySelector("h1").getTextContent()).isEqualTo("Test session");
+		assertThat(htmlPage.querySelector("h2").getTextContent()).isEqualTo("Some Conference (2024-04-22)");
 	}
 
 	@Test

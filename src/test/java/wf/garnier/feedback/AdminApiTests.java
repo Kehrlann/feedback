@@ -36,11 +36,15 @@ class AdminApiTests extends TestBase {
 	@WithMockUser("alice@example.com")
 	void addSession() throws Exception {
 		var sessionName = "session-add " + UUID.randomUUID();
-		mvc.perform(post("/admin/session").param("name", sessionName).with(csrf()))
+		var sessionDescription = "description " + UUID.randomUUID();
+		mvc.perform(
+				post("/admin/session").param("name", sessionName).param("description", sessionDescription).with(csrf()))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(redirectedUrl("/admin"));
-		assertThat(StreamSupport.stream(sessionRepository.findAll().spliterator(), false)).map(Session::getName)
-			.anyMatch(sessionName::equals);
+		assertThat(StreamSupport.stream(sessionRepository.findAll().spliterator(), false)).anySatisfy((session) -> {
+			assertThat(session.getName()).isEqualTo(sessionName);
+			assertThat(session.getDescription()).isEqualTo(sessionDescription);
+		});
 	}
 
 	@Test
