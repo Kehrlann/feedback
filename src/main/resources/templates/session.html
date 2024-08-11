@@ -7,6 +7,8 @@
 <body>
 <h1 th:text="${currentSession.getName()}"></h1>
 <h2 th:text="${currentSession.getDescription()}"></h2>
+<button data-role="feedback-choice" th:each="choice: ${currentSession.getFeedbackChoices()}"
+        th:text="${choice}"></button>
 <a href="/" id="home">Home</a>
 </body>
 </html>
