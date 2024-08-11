@@ -16,7 +16,7 @@ class SessionControllerTests extends TestBase {
 	@Override
 	void setUp() throws IOException {
 		datastoreHelper.reset();
-		session = sessionRepository.save(new Session("Test session"));
+		session = sessionRepository.save(new Session("Test session", "Some Conference (2024-04-22)"));
 	}
 
 	@Test

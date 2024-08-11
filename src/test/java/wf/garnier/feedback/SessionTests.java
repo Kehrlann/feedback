@@ -12,10 +12,11 @@ class SessionTests {
 	@Test
 	void constructor() {
 		var beforeCreation = LocalDateTime.now(ZoneId.of("UTC"));
-		var session = new Session("session name");
+		var session = new Session("session name", "session description");
 		var afterCreation = LocalDateTime.now(ZoneId.of("UTC"));
 
 		assertThat(session.getName()).isEqualTo("session name");
+		assertThat(session.getDescription()).isEqualTo("session description");
 		assertThat(session.getActive()).isTrue();
 		assertThat(session.getSessionId()).isNotNull();
 		assertThat(session.getCreationTime()).isBetween(beforeCreation, afterCreation);

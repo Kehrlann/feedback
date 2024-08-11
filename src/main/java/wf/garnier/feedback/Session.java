@@ -24,6 +24,9 @@ public class Session {
 	@Unindexed
 	private String name;
 
+	@Unindexed
+	private String description;
+
 	private Boolean active;
 
 	@CreatedDate
@@ -51,13 +54,14 @@ public class Session {
 	public Session() {
 	}
 
-	public Session(String name) {
-		this(name, true, DEFAULT_FEEDBACK_CHOICES);
+	public Session(String name, String description) {
+		this(name, description, true, DEFAULT_FEEDBACK_CHOICES);
 	}
 
-	public Session(String name, Boolean active, List<String> feedbackChoices) {
+	public Session(String name, String description, Boolean active, List<String> feedbackChoices) {
 		this.sessionId = UUID.randomUUID().toString();
 		this.name = name;
+		this.description = description;
 		this.active = active;
 		this.creationTime = LocalDateTime.now(ZoneId.of("UTC"));
 		this.feedbackChoices = feedbackChoices;
@@ -111,11 +115,27 @@ public class Session {
 		this.feedbackChoices = feedbackChoices;
 	}
 
+	public String getDescription() {
+		return this.description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	@Override
 	public String toString() {
-		return "Session{" + "key=" + this.key + ", sessionId='" + this.sessionId + '\'' + ", name='" + this.name + '\''
-				+ ", active=" + this.active + ", creationTime=" + this.creationTime + ", feedbackChoices="
-				+ this.feedbackChoices + '}';
+		//@formatter:off
+		return "Session{" +
+				"key=" + this.key +
+				", sessionId='" + this.sessionId + "'" +
+				", name='" + this.name + "'" +
+				", description='" + this.description + "'" +
+				", active=" + this.active +
+				", creationTime=" + this.creationTime +
+				", feedbackChoices=" + this.feedbackChoices +
+				'}';
+		//@formatter:on
 	}
 
 }

@@ -117,7 +117,7 @@ class AdminApiTests extends TestBase {
 	}
 
 	private Session createSession(boolean active) {
-		var activeSession = new Session("test-session-" + UUID.randomUUID(), active, Collections.emptyList());
+		var activeSession = new Session("test-session-" + UUID.randomUUID(), "", active, Collections.emptyList());
 		return this.sessionRepository.save(activeSession);
 	}
 
