@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SessionControllerTests extends TestBase {
+class SessionWebTests extends TestBase {
 
 	Session session;
 
