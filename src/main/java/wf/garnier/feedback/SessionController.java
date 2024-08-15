@@ -1,9 +1,14 @@
 package wf.garnier.feedback;
 
+import java.time.Duration;
 import java.util.Comparator;
+import java.util.UUID;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -27,7 +32,18 @@ class SessionController {
 	}
 
 	@GetMapping("/session/{sessionId}")
-	String session(@PathVariable("sessionId") String sessionId, Model model) {
+	String session(@PathVariable("sessionId") String sessionId,
+			@CookieValue(value = "feedback-id", required = false) String userId, Model model,
+			HttpServletResponse response) {
+		if (userId == null || userId.isBlank()) {
+			userId = UUID.randomUUID().toString();
+		}
+		var cookie = new Cookie("feedback-id", userId);
+		cookie.setPath("/session");
+		cookie.setHttpOnly(true);
+		cookie.setMaxAge((int) Duration.ofDays(1).toSeconds());
+		response.addCookie(cookie);
+
 		var session = this.sessionRepository.findSessionBySessionId(sessionId).get();
 		model.addAttribute("currentSession", session);
 		return "session";

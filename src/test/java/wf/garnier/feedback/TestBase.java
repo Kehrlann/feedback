@@ -29,10 +29,12 @@ class TestBase {
 	@Autowired
 	protected LocalDatastoreHelper datastoreHelper;
 
+	protected Session savedSession;
+
 	@BeforeEach
 	void setUp() throws IOException {
 		datastoreHelper.reset();
-		sessionRepository.save(new Session("Test session", "Some Conference, 2024-04-22"));
+		savedSession = sessionRepository.save(new Session("Test session", "Some Conference, 2024-04-22"));
 		sessionRepository.save(new Session("Other test session", "SpringIO, 2024-05-30"));
 		sessionRepository.save(new Session("Inactive session", "MiXiT, 2024-04-29", false, Collections.emptyList()));
 	}
