@@ -33,15 +33,15 @@ class SessionController {
 
 	@GetMapping("/session/{sessionId}")
 	String session(@PathVariable("sessionId") String sessionId,
-			@CookieValue(value = "feedback-id", required = false) String userId, Model model,
+			@CookieValue(value = "voter-id", required = false) String userId, Model model,
 			HttpServletResponse response) {
 		if (userId == null || userId.isBlank()) {
 			userId = UUID.randomUUID().toString();
 		}
-		var cookie = new Cookie("feedback-id", userId);
+		var cookie = new Cookie("voter-id", userId);
 		cookie.setPath("/session");
 		cookie.setHttpOnly(true);
-		cookie.setMaxAge((int) Duration.ofDays(1).toSeconds());
+		cookie.setMaxAge((int) Duration.ofDays(7).toSeconds());
 		response.addCookie(cookie);
 
 		var session = this.sessionRepository.findSessionBySessionId(sessionId).get();

@@ -13,20 +13,20 @@ class SessionApiTests extends TestBase {
 	void setsCookie() throws Exception {
 		mvc.perform(get("/session/" + savedSession.getSessionId()))
 			.andExpect(status().is2xxSuccessful())
-			.andExpect(cookie().path("feedback-id", "/session"))
-			.andExpect(cookie().maxAge("feedback-id", 60 * 60 * 24));
+			.andExpect(cookie().path("voter-id", "/session"))
+			.andExpect(cookie().maxAge("voter-id", 60 * 60 * 24 * 7));
 	}
 
 	@Test
 	void resetsCookie() throws Exception {
-		Cookie cookie = new Cookie("feedback-id", "test-cookie-id");
+		Cookie cookie = new Cookie("voter-id", "test-cookie-id");
 		cookie.setPath("/session");
 		cookie.setMaxAge(60);
 		mvc.perform(get("/session/" + savedSession.getSessionId()).cookie(cookie))
 			.andExpect(status().is2xxSuccessful())
-			.andExpect(cookie().value("feedback-id", "test-cookie-id"))
-			.andExpect(cookie().path("feedback-id", "/session"))
-			.andExpect(cookie().maxAge("feedback-id", 60 * 60 * 24));
+			.andExpect(cookie().value("voter-id", "test-cookie-id"))
+			.andExpect(cookie().path("voter-id", "/session"))
+			.andExpect(cookie().maxAge("voter-id", 60 * 60 * 24 * 7));
 	}
 
 }
