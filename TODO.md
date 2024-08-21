@@ -32,3 +32,8 @@
 - [ ] GraalVM
 - [ ] Deploy
 - [ ] Consider caching
+
+## Follow up
+
+- [ ] spring-cloud-gcp-datastore and Descendants
+        -> https://github.com/GoogleCloudPlatform/spring-cloud-gcp/issues/3142
