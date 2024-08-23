@@ -1,6 +1,7 @@
 package wf.garnier.feedback;
 
 import jakarta.servlet.http.Cookie;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -13,6 +14,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class SessionApiTests extends TestBase {
 
+	Cookie cookie = new Cookie("voter-id", "test-voter");
+
+	@BeforeEach
+	@Override
+	void setUp() throws java.io.IOException {
+		super.setUp();
+		cookie.setPath("/session");
+	}
+
 	@Test
 	void setsCookie() throws Exception {
 		mvc.perform(get("/session/" + savedSession.getSessionId()))
@@ -23,22 +33,15 @@ class SessionApiTests extends TestBase {
 
 	@Test
 	void resetsCookie() throws Exception {
-		Cookie cookie = new Cookie("voter-id", "test-cookie-id");
-		cookie.setPath("/session");
-		cookie.setMaxAge(60);
 		mvc.perform(get("/session/" + savedSession.getSessionId()).cookie(cookie))
 			.andExpect(status().is2xxSuccessful())
-			.andExpect(cookie().value("voter-id", "test-cookie-id"))
+			.andExpect(cookie().value("voter-id", "test-voter"))
 			.andExpect(cookie().path("voter-id", "/session"))
 			.andExpect(cookie().maxAge("voter-id", 60 * 60 * 24 * 7));
 	}
 
 	@Test
 	void addVote() throws Exception {
-		Cookie cookie = new Cookie("voter-id", "test-voter");
-		cookie.setPath("/session");
-		cookie.setMaxAge(60);
-
 		mvc.perform(post("/session/" + savedSession.getSessionId() + "/vote").with(csrf())
 			.cookie(cookie)
 			.param("feedback", "Fun")).andExpect(status().is2xxSuccessful());
