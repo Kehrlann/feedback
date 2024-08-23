@@ -48,11 +48,15 @@ class SessionApiTests extends TestBase {
 		void success() throws Exception {
 			mvc.perform(post("/session/" + savedSession.getSessionId() + "/vote").with(csrf())
 				.cookie(cookie)
-				.param("feedback", "Fun")).andExpect(status().is2xxSuccessful());
+				.param("feedback", "Fun")).andExpect(status().isCreated());
+
+			mvc.perform(post("/session/" + savedSession.getSessionId() + "/vote").with(csrf())
+				.cookie(cookie)
+				.param("feedback", "Interesting")).andExpect(status().isCreated());
 
 			mvc.perform(get("/session/" + savedSession.getSessionId() + "/vote"))
 				.andExpect(status().is2xxSuccessful())
-				.andExpect(jsonPath("$.length()").value(1));
+				.andExpect(jsonPath("$.length()").value(2));
 		}
 
 		@Test

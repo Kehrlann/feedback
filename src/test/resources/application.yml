@@ -7,6 +7,7 @@ spring:
         emulator:
           enabled: true
           consistency: 1.0
+        project-id: testing
   security:
     oauth2:
       client:

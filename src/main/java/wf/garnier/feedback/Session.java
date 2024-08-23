@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.google.cloud.datastore.Key;
+import com.google.cloud.spring.data.datastore.core.mapping.Descendants;
 import com.google.cloud.spring.data.datastore.core.mapping.Entity;
 import com.google.cloud.spring.data.datastore.core.mapping.Field;
 import com.google.cloud.spring.data.datastore.core.mapping.Unindexed;
@@ -28,6 +29,9 @@ public class Session {
 	private String description;
 
 	private Boolean active;
+
+	@Descendants
+	private List<SessionVote> votes;
 
 	@CreatedDate
 	@Field(name = "creation_time")
@@ -123,6 +127,14 @@ public class Session {
 		this.description = description;
 	}
 
+	public List<SessionVote> getVotes() {
+		return this.votes;
+	}
+
+	public void setVotes(List<SessionVote> votes) {
+		this.votes = votes;
+	}
+
 	@Override
 	public String toString() {
 		//@formatter:off
@@ -136,6 +148,11 @@ public class Session {
 				", feedbackChoices=" + this.feedbackChoices +
 				'}';
 		//@formatter:on
+	}
+
+	public void addVote(String voterId, String feedback) {
+		// TODO: check vote
+		this.votes = List.of(new SessionVote(voterId, feedback));
 	}
 
 }

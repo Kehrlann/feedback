@@ -1,6 +1,7 @@
 package wf.garnier.feedback;
 
 import java.time.Duration;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -45,12 +46,20 @@ class SessionController {
 	String session(@PathVariable("sessionId") String sessionId,
 			@CookieValue(value = "voter-id", required = false) String userId, Model model,
 			HttpServletResponse response) {
+		// Get data
 		var loadedSession = this.sessionRepository.findSessionBySessionId(sessionId);
 		if (loadedSession.isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Session does not exist");
 		}
 		var session = loadedSession.get();
+		model.addAttribute("currentSession", session);
 
+		response.addCookie(refreshCookie(userId));
+
+		return "session";
+	}
+
+	private static Cookie refreshCookie(String userId) {
 		if (userId == null || userId.isBlank()) {
 			userId = UUID.randomUUID().toString();
 		}
@@ -58,17 +67,16 @@ class SessionController {
 		cookie.setPath("/session");
 		cookie.setHttpOnly(true);
 		cookie.setMaxAge((int) Duration.ofDays(7).toSeconds());
-		response.addCookie(cookie);
-
-		model.addAttribute("currentSession", session);
-		return "session";
+		return cookie;
 	}
 
 	@GetMapping("/session/{sessionId}/vote")
 	@ResponseBody
 	List<VoteResponse> vote(@PathVariable("sessionId") String sessionId) {
-		return this.sessionVoteRepository.findAllBySessionId(sessionId)
+		return this.sessionRepository.findSessionBySessionId(sessionId)
 			.stream()
+			.map(Session::getVotes)
+			.flatMap(Collection::stream)
 			.map((vote) -> new VoteResponse(vote.getVoterId(), vote.getFeedback()))
 			.toList();
 	}
@@ -86,7 +94,8 @@ class SessionController {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 					"Unknown feedback choice. Please use one of: %s".formatted(session.getFeedbackChoices()));
 		}
-		this.sessionVoteRepository.save(new SessionVote(voterId, feedback, sessionId));
+		session.addVote(voterId, feedback);
+		this.sessionRepository.save(session);
 	}
 
 	record VoteResponse(String voterId, String feedback) {

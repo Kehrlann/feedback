@@ -17,6 +17,7 @@ public class SessionVote {
 	@Id
 	private Key key;
 
+	@Unindexed
 	@Field(name = "voter_id")
 	private String voterId;
 
@@ -24,21 +25,18 @@ public class SessionVote {
 	@NotBlank
 	private String feedback;
 
-	@Field(name = "session_id")
-	private String sessionId;
-
 	@CreatedDate
 	@Field(name = "creation_time")
 	@Unindexed
 	private LocalDateTime creationTime;
 
 	public SessionVote() {
+		// keep for spring-data
 	}
 
-	public SessionVote(String voterId, String feedback, String sessionId) {
+	SessionVote(String voterId, String feedback) {
 		this.voterId = voterId;
 		this.feedback = feedback;
-		this.sessionId = sessionId;
 		this.creationTime = LocalDateTime.now(ZoneId.of("UTC"));
 	}
 
@@ -72,14 +70,6 @@ public class SessionVote {
 
 	public void setKey(Key key) {
 		this.key = key;
-	}
-
-	public String getSessionId() {
-		return this.sessionId;
-	}
-
-	public void setSessionId(String sessionId) {
-		this.sessionId = sessionId;
 	}
 
 }
