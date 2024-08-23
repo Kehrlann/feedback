@@ -152,7 +152,10 @@ public class Session {
 	}
 
 	public void addVote(String voterId, String feedback) {
-		// TODO: check vote
+		// TODO: check vote valid
+		if (this.getVote(voterId, feedback).isPresent()) {
+			return;
+		}
 		this.votes = List.of(new SessionVote(voterId, feedback));
 	}
 

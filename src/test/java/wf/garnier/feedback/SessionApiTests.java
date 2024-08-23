@@ -60,6 +60,21 @@ class SessionApiTests extends TestBase {
 		}
 
 		@Test
+		void noDuplicates() throws Exception {
+			mvc.perform(post("/session/" + savedSession.getSessionId() + "/vote").with(csrf())
+				.cookie(cookie)
+				.param("feedback", "Fun")).andExpect(status().isCreated());
+
+			mvc.perform(post("/session/" + savedSession.getSessionId() + "/vote").with(csrf())
+				.cookie(cookie)
+				.param("feedback", "Fun")).andExpect(status().isCreated());
+
+			mvc.perform(get("/session/" + savedSession.getSessionId() + "/vote"))
+				.andExpect(status().is2xxSuccessful())
+				.andExpect(jsonPath("$.length()").value(1));
+		}
+
+		@Test
 		void sessionDoesNotExist() throws Exception {
 			mvc.perform(post("/session/does-not-exist/vote").with(csrf()).cookie(cookie).param("feedback", "Fun"))
 				.andExpect(status().isNotFound());
