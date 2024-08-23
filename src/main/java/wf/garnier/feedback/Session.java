@@ -3,6 +3,7 @@ package wf.garnier.feedback;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import com.google.cloud.datastore.Key;
@@ -153,6 +154,12 @@ public class Session {
 	public void addVote(String voterId, String feedback) {
 		// TODO: check vote
 		this.votes = List.of(new SessionVote(voterId, feedback));
+	}
+
+	public Optional<SessionVote> getVote(String voterId, String feedback) {
+		return this.votes.stream()
+			.filter((vote) -> vote.getVoterId().equals(voterId) && vote.getFeedback().equals(feedback))
+			.findFirst();
 	}
 
 }

@@ -2,11 +2,11 @@ package wf.garnier.feedback;
 
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
@@ -80,9 +80,43 @@ class SessionApiTests extends TestBase {
 
 	}
 
-	@Test
-	@Disabled
-	void deleteVote() throws Exception {
+	@Nested
+	class DeleteVote {
+
+		@Test
+		void success() throws Exception {
+			mvc.perform(post("/session/" + savedSession.getSessionId() + "/vote").with(csrf())
+				.cookie(cookie)
+				.param("feedback", "Fun")).andExpect(status().isCreated());
+
+			mvc.perform(delete("/session/" + savedSession.getSessionId() + "/vote").with(csrf())
+				.cookie(cookie)
+				.param("feedback", "Fun")).andExpect(status().isNoContent());
+
+			mvc.perform(get("/session/" + savedSession.getSessionId() + "/vote"))
+				.andExpect(status().is2xxSuccessful())
+				.andExpect(jsonPath("$.length()").value(0));
+		}
+
+		@Test
+		void sessionDoesNotExist() throws Exception {
+			mvc.perform(delete("/session/does-not-exist/vote").with(csrf()).cookie(cookie).param("feedback", "Fun"))
+				.andExpect(status().isNotFound());
+		}
+
+		@Test
+		void noCookie() throws Exception {
+			mvc.perform(post("/session/" + savedSession.getSessionId() + "/vote").with(csrf()).param("feedback", "Fun"))
+				.andExpect(status().isBadRequest());
+		}
+
+		@Test
+		void voteDoesNotExist() throws Exception {
+			mvc.perform(delete("/session/" + savedSession.getSessionId() + "/vote").with(csrf())
+				.cookie(cookie)
+				.param("feedback", "This does not exist")).andExpect(status().isNoContent());
+
+		}
 
 	}
 

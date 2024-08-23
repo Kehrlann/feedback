@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -96,6 +97,19 @@ class SessionController {
 		}
 		session.addVote(voterId, feedback);
 		this.sessionRepository.save(session);
+	}
+
+	@DeleteMapping("/session/{sessionId}/vote")
+	@ResponseStatus(code = HttpStatus.NO_CONTENT)
+	void deleteVote(@PathVariable("sessionId") String sessionId, @RequestParam("feedback") String feedback,
+			@CookieValue(value = "voter-id", required = true) String voterId) {
+		// TODO: use composite-key instead
+		var loadedSession = this.sessionRepository.findSessionBySessionId(sessionId);
+		if (loadedSession.isEmpty()) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Session does not exist");
+		}
+		var session = loadedSession.get();
+		session.getVote(voterId, feedback).ifPresent(this.sessionVoteRepository::delete);
 	}
 
 	record VoteResponse(String voterId, String feedback) {
