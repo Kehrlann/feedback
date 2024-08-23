@@ -28,7 +28,7 @@ class SessionWebTests extends TestBase {
 	void viewSession() throws Exception {
 		HtmlPage htmlPage = webClient.getPage("/session/" + session.getSessionId());
 
-		var choices = htmlPage.querySelectorAll("button[data-role=\"feedback-choice\"]")
+		var choices = htmlPage.querySelectorAll("[data-role=\"feedback-choice\"]")
 			.stream()
 			.map(DomNode::getTextContent);
 		assertThat(htmlPage.querySelector("h1").getTextContent()).isEqualTo("Test session");
