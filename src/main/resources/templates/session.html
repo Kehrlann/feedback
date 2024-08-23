@@ -3,12 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="${currentSession.getName()}"></title>
+    <style>
+        .votes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+
+            & > button {
+                display: block;
+                padding: 20px 20px;
+                margin: 10px;
+            }
+        }
+    </style>
+    <script th:inline="javascript">
+        function addVote(button) {
+            const feedback = button.getAttribute("data-choice");
+            console.log(`Adding vote ${feedback}`)
+            fetch(window.location.pathname + "/vote", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    [[${_csrf.getHeaderName()}]]: [[${_csrf.getToken()}]]
+                },
+                body: new URLSearchParams({feedback})
+            }).then(r => console.log(r))
+        }
+    </script>
 </head>
 <body>
 <h1 th:text="${currentSession.getName()}"></h1>
 <h2 th:text="${currentSession.getDescription()}"></h2>
-<button data-role="feedback-choice" th:each="choice: ${currentSession.getFeedbackChoices()}"
-        th:text="${choice}"></button>
+<div class="votes">
+    <button data-role="feedback-choice"
+            th:each="choice: ${currentSession.getFeedbackChoices()}"
+            th:text="${choice}"
+            onclick="addVote(this)"
+            th:data-choice="${choice}"
+    ></button>
+</div>
 <a href="/" id="home">Home</a>
 </body>
 </html>

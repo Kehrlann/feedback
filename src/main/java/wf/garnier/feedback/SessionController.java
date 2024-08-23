@@ -1,6 +1,7 @@
 package wf.garnier.feedback;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -86,17 +87,23 @@ class SessionController {
 	@ResponseStatus(code = HttpStatus.CREATED)
 	void vote(@PathVariable("sessionId") String sessionId, @RequestParam("feedback") String feedback,
 			@CookieValue(value = "voter-id", required = true) String voterId) {
+		var start = Instant.now();
 		var loadedSession = this.sessionRepository.findSessionBySessionId(sessionId);
 		if (loadedSession.isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Session does not exist");
 		}
 		var session = loadedSession.get();
+		var end = Instant.now();
+		System.out.printf("Load: %s%n", Duration.between(start, end).toMillis());
 		if (!session.getFeedbackChoices().contains(feedback)) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 					"Unknown feedback choice. Please use one of: %s".formatted(session.getFeedbackChoices()));
 		}
 		session.addVote(voterId, feedback);
+		start = Instant.now();
 		this.sessionRepository.save(session);
+		end = Instant.now();
+		System.out.printf("Save: %s%n", Duration.between(start, end).toMillis());
 	}
 
 	@DeleteMapping("/session/{sessionId}/vote")
