@@ -13,4 +13,6 @@ interface SessionRepository extends DatastoreRepository<Session, String> {
 
 	Optional<Session> findSessionBySessionId(String sessionId);
 
+	boolean existsBySessionId(String sessionId);
+
 }

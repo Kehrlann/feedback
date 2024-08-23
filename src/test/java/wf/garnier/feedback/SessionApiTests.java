@@ -52,15 +52,22 @@ class SessionApiTests extends TestBase {
 	}
 
 	@Test
-	@Disabled
 	void addVoteSessionDoesNotExist() throws Exception {
-
+		mvc.perform(post("/session/does-not-exist/vote").with(csrf()).cookie(cookie).param("feedback", "Fun"))
+			.andExpect(status().isNotFound());
 	}
 
 	@Test
-	@Disabled
 	void addVoteRequiresCookie() throws Exception {
+		mvc.perform(post("/session/" + savedSession.getSessionId() + "/vote").with(csrf()).param("feedback", "Fun"))
+			.andExpect(status().isBadRequest());
+	}
 
+	@Test
+	void addVoteOnlyAllowedFeedbackChoices() throws Exception {
+		mvc.perform(post("/session/" + savedSession.getSessionId() + "/vote").with(csrf())
+			.cookie(cookie)
+			.param("feedback", "This is not allowed")).andExpect(status().isBadRequest());
 	}
 
 	@Test

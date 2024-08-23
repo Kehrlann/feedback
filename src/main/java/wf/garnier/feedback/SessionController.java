@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 @Controller
 class SessionController {
@@ -44,6 +45,12 @@ class SessionController {
 	String session(@PathVariable("sessionId") String sessionId,
 			@CookieValue(value = "voter-id", required = false) String userId, Model model,
 			HttpServletResponse response) {
+		var loadedSession = this.sessionRepository.findSessionBySessionId(sessionId);
+		if (loadedSession.isEmpty()) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Session does not exist");
+		}
+		var session = loadedSession.get();
+
 		if (userId == null || userId.isBlank()) {
 			userId = UUID.randomUUID().toString();
 		}
@@ -53,7 +60,6 @@ class SessionController {
 		cookie.setMaxAge((int) Duration.ofDays(7).toSeconds());
 		response.addCookie(cookie);
 
-		var session = this.sessionRepository.findSessionBySessionId(sessionId).get();
 		model.addAttribute("currentSession", session);
 		return "session";
 	}
@@ -71,6 +77,15 @@ class SessionController {
 	@ResponseStatus(code = HttpStatus.CREATED)
 	void vote(@PathVariable("sessionId") String sessionId, @RequestParam("feedback") String feedback,
 			@CookieValue(value = "voter-id", required = true) String voterId) {
+		var loadedSession = this.sessionRepository.findSessionBySessionId(sessionId);
+		if (loadedSession.isEmpty()) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Session does not exist");
+		}
+		var session = loadedSession.get();
+		if (!session.getFeedbackChoices().contains(feedback)) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"Unknown feedback choice. Please use one of: %s".formatted(session.getFeedbackChoices()));
+		}
 		this.sessionVoteRepository.save(new SessionVote(voterId, feedback, sessionId));
 	}
 
